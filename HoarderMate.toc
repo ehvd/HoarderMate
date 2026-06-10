@@ -1,0 +1,6 @@
+## Interface: 11508
+## Title: HoarderMate
+## Notes: Addon that makes it simple to mail items to your banker characters.
+## Author: Bogartlover-MirageRaceway
+## Version: 0.0.1
+
