@@ -1,0 +1,69 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+    <!-- HoarderMate tab content panel, overlays the mail inset -->
+    <Frame name="HoarderMatePanel" parent="MailFrame" hidden="true">
+        <Anchors>
+            <Anchor point="TOPLEFT"     relativeTo="MailFrameInset" relativePoint="TOPLEFT"/>
+            <Anchor point="BOTTOMRIGHT" relativeTo="MailFrameInset" relativePoint="BOTTOMRIGHT"/>
+        </Anchors>
+        <Layers>
+            <Layer level="ARTWORK">
+                <FontString name="$parentLabel" inherits="GameFontNormal" justifyH="CENTER" text="HoarderMate">
+                    <Anchors>
+                        <Anchor point="CENTER" y="20"/>
+                    </Anchors>
+                </FontString>
+                <FontString name="$parentSublabel" inherits="GameFontDisable" justifyH="CENTER"
+                            text="Click the cogwheel to configure&#10;bankers and items.">
+                    <Anchors>
+                        <Anchor point="TOP" relativeTo="$parentLabel" relativePoint="BOTTOM" y="-6"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
+    <!-- Third mail tab -->
+    <Button name="MailFrameTab3" parent="MailFrame" inherits="CharacterFrameTabButtonTemplate" text="HoarderMate">
+        <Anchors>
+            <Anchor point="LEFT" relativeTo="MailFrameTab2" relativePoint="RIGHT" x="-8"/>
+        </Anchors>
+    </Button>
+
+    <!-- Cogwheel config button, sits left of the close button -->
+    <Button name="HoarderMateConfigButton" parent="MailFrame" inherits="GameMenuButtonTemplate" hidden="false">
+        <Size>
+            <AbsDimension x="24" y="22"/>
+        </Size>
+        <Anchors>
+            <Anchor point="RIGHT" relativeTo="MailFrameCloseButton" relativePoint="LEFT">
+                <Offset x="4" y="2"/>
+            </Anchor>
+        </Anchors>
+        <Layers>
+            <Layer level="OVERLAY">
+                <Texture name="$parentGear" file="Interface\Buttons\UI-OptionsButton">
+                    <Anchors>
+                        <Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
+                    </Anchors>
+                    <Size>
+                        <AbsDimension x="12" y="12"/>
+                    </Size>
+                </Texture>
+            </Layer>
+        </Layers>
+        <Scripts>
+            <OnMouseDown inherit="append">
+                HoarderMateConfigButtonGear:ClearAllPoints()
+                HoarderMateConfigButtonGear:SetPoint("CENTER", self, "CENTER", -2, -2)
+            </OnMouseDown>
+            <OnMouseUp inherit="append">
+                HoarderMateConfigButtonGear:ClearAllPoints()
+                HoarderMateConfigButtonGear:SetPoint("CENTER", self, "CENTER", 0, 0)
+            </OnMouseUp>
+        </Scripts>
+    </Button>
+
+</Ui>

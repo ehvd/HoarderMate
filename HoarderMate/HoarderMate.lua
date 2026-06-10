@@ -1,5 +1,7 @@
 local ADDON_NAME = ...
 
+HoarderMate = {}
+
 local loader = CreateFrame("Frame")
 loader:RegisterEvent("ADDON_LOADED")
 loader:SetScript("OnEvent", function(self, event, name)

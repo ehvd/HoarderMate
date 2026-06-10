@@ -1,34 +1,22 @@
--- Panel that replaces the mail content area
-local hmPanel = CreateFrame("Frame", "HoarderMatePanel", MailFrame)
-hmPanel:SetAllPoints(MailFrameInset)
-hmPanel:Hide()
+HoarderMate.mailPanel = HoarderMatePanel
 
-local title = hmPanel:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-title:SetPoint("TOP", 0, -16)
-title:SetText("HoarderMate")
+-- MailFrameTab3 properties that cannot be set in XML
+MailFrameTab3.index = 3
+PanelTemplates_SetNumTabs(MailFrame, 3)
 
-local subtitle = hmPanel:CreateFontString(nil, "OVERLAY", "GameFontDisable")
-subtitle:SetPoint("TOP", title, "BOTTOM", 0, -6)
-subtitle:SetText("Addon features coming soon.")
+local hmPanelOpen = false
 
 local function ShowNativeContent()
-    hmPanel:Hide()
+    HoarderMatePanel:Hide()
+    HoarderMateConfigButton:Hide()
 end
 
 local function ShowHMPanel()
     SendMailFrame:Hide()
     InboxFrame:Hide()
-    hmPanel:Show()
+    HoarderMatePanel:Show()
+    HoarderMateConfigButton:Show()
 end
-
--- Tab button on the mailbox
-local mailTab = CreateFrame("Button", "MailFrameTab3", MailFrame, "CharacterFrameTabButtonTemplate")
-mailTab:SetText("HoarderMate")
-mailTab:SetPoint("LEFT", MailFrameTab2, "RIGHT", -8, 0)
-mailTab.index = 3
-PanelTemplates_SetNumTabs(MailFrame, 3)
-
-local hmPanelOpen = false
 
 local function SetTabActive(active)
     hmPanelOpen = active
@@ -41,8 +29,13 @@ local function SetTabActive(active)
     end
 end
 
-mailTab:SetScript("OnClick", function()
+MailFrameTab3:SetScript("OnClick", function()
     SetTabActive(true)
+end)
+
+
+HoarderMateConfigButton:SetScript("OnClick", function()
+    HoarderMate.ToggleConfigWindow()
 end)
 
 SendMailFrame:HookScript("OnShow", function()
@@ -53,14 +46,15 @@ InboxFrame:HookScript("OnShow", function()
 end)
 
 local function OnMailboxOpen()
-    mailTab:Show()
+    MailFrameTab3:Show()
     SetTabActive(false)
 end
 
 local function OnMailboxClose()
-    mailTab:Hide()
+    MailFrameTab3:Hide()
     hmPanelOpen = false
-    hmPanel:Hide()
+    HoarderMatePanel:Hide()
+    HoarderMateConfigButton:Hide()
 end
 
 local mailEvents = CreateFrame("Frame")

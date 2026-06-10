@@ -1,0 +1,195 @@
+local ROW_H = 22
+
+-- Local aliases for XML-defined frames
+local win           = HoarderMateConfigWindow
+local bankerContent = HoarderMateConfigBankerContent
+local itemScroll    = HoarderMateConfigItemScroll
+local itemContent   = HoarderMateConfigItemContent
+local noSelection   = HoarderMateConfigNoSelection
+local addBankerBox  = HoarderMateConfigAddBankerBox
+local addBankerBtn  = HoarderMateConfigAddBankerBtn
+local addItemBox    = HoarderMateConfigAddItemBox
+local addItemBtn    = HoarderMateConfigAddItemBtn
+
+-- Placeholder texts (SearchBoxTemplate.Instructions can only be set via Lua)
+addBankerBox.Instructions:SetText("Name-Realm")
+addItemBox.Instructions:SetText("Item ID or link")
+
+-------------------------------------------------------------------------------
+-- DB helpers
+-------------------------------------------------------------------------------
+local function DB()
+    HoarderMateDB.bankers = HoarderMateDB.bankers or {}
+    return HoarderMateDB.bankers
+end
+
+local function AddBanker(name)
+    if name == "" then return end
+    DB()[name] = DB()[name] or { items = {} }
+end
+
+local function RemoveBanker(name)
+    DB()[name] = nil
+end
+
+local function AddItem(banker, itemID)
+    if DB()[banker] then DB()[banker].items[itemID] = true end
+end
+
+local function RemoveItem(banker, itemID)
+    if DB()[banker] then DB()[banker].items[itemID] = nil end
+end
+
+-------------------------------------------------------------------------------
+-- Toggle
+-------------------------------------------------------------------------------
+function HoarderMate.ToggleConfigWindow()
+    if win:IsShown() then
+        win:Hide()
+    else
+        HoarderMateDB = HoarderMateDB or {}
+        win:Show()
+    end
+end
+
+-------------------------------------------------------------------------------
+-- Dynamic row builders
+-------------------------------------------------------------------------------
+local selectedBanker = nil
+local bankerRows     = {}
+local itemRows       = {}
+
+local function RefreshItems()
+    for _, r in ipairs(itemRows) do r:Hide() end
+    itemRows = {}
+
+    if not selectedBanker or not DB()[selectedBanker] then
+        noSelection:Show()
+        itemContent:SetHeight(1)
+        return
+    end
+    noSelection:Hide()
+
+    local idx = 0
+    for itemID in pairs(DB()[selectedBanker].items) do
+        idx = idx + 1
+        local row = CreateFrame("Frame", nil, itemContent)
+        row:SetSize(itemContent:GetWidth() - 24, ROW_H)
+        row:SetPoint("TOPLEFT", 0, -(idx - 1) * ROW_H)
+
+        local icon = row:CreateTexture(nil, "ARTWORK")
+        icon:SetSize(ROW_H - 2, ROW_H - 2)
+        icon:SetPoint("LEFT", 1, 0)
+        icon:SetTexture(C_Item.GetItemIconByID(itemID))
+
+        local quality = select(3, GetItemInfo(itemID))
+        local color   = ITEM_QUALITY_COLORS[quality or 1] or ITEM_QUALITY_COLORS[1]
+
+        local label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        label:SetPoint("LEFT", icon, "RIGHT", 4, 0)
+        label:SetWidth(row:GetWidth() - ROW_H - 28)
+        label:SetJustifyH("LEFT")
+        label:SetText(C_Item.GetItemNameByID(itemID) or "Item #" .. itemID)
+        label:SetTextColor(color.r, color.g, color.b)
+
+        local remove = CreateFrame("Button", nil, row, "UIPanelCloseButton")
+        remove:SetSize(18, 18)
+        remove:SetPoint("RIGHT", 0, 0)
+        remove:SetScript("OnClick", function()
+            RemoveItem(selectedBanker, itemID)
+            RefreshItems()
+        end)
+
+        row:EnableMouse(true)
+        row:SetScript("OnEnter", function(self)
+            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+            GameTooltip:SetHyperlink("item:" .. itemID)
+            GameTooltip:Show()
+        end)
+        row:SetScript("OnLeave", GameTooltip_Hide)
+
+        row:Show()
+        itemRows[idx] = row
+    end
+    itemContent:SetHeight(math.max(idx * ROW_H, 1))
+end
+
+local function RefreshBankers()
+    for _, r in ipairs(bankerRows) do r:Hide() end
+    bankerRows = {}
+
+    local idx = 0
+    for name in pairs(DB()) do
+        idx = idx + 1
+        local row = CreateFrame("Button", nil, bankerContent)
+        row:SetSize(bankerContent:GetWidth(), ROW_H)
+        row:SetPoint("TOPLEFT", 0, -(idx - 1) * ROW_H)
+
+        local bg = row:CreateTexture(nil, "BACKGROUND")
+        bg:SetAllPoints()
+
+        local label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        label:SetPoint("LEFT", 4, 0)
+        label:SetPoint("RIGHT", -4, 0)
+        label:SetJustifyH("LEFT")
+        label:SetText(name)
+
+        local function UpdateHighlight()
+            if selectedBanker == name then
+                bg:SetColorTexture(0.2, 0.5, 1, 0.3)
+            elseif row:IsMouseOver() then
+                bg:SetColorTexture(1, 1, 1, 0.1)
+            else
+                bg:SetColorTexture(0, 0, 0, 0)
+            end
+        end
+
+        row:SetScript("OnClick", function()
+            selectedBanker = name
+            RefreshBankers()
+            RefreshItems()
+        end)
+        row:SetScript("OnEnter", UpdateHighlight)
+        row:SetScript("OnLeave", UpdateHighlight)
+        UpdateHighlight()
+
+        bankerRows[idx] = row
+    end
+    bankerContent:SetHeight(math.max(idx * ROW_H, 1))
+end
+
+-------------------------------------------------------------------------------
+-- Scripts
+-------------------------------------------------------------------------------
+win:HookScript("OnShow", function()
+    selectedBanker = nil
+    noSelection:Show()
+    RefreshBankers()
+    RefreshItems()
+end)
+
+addBankerBtn:SetScript("OnClick", function()
+    local name = strtrim(addBankerBox:GetText())
+    AddBanker(name)
+    addBankerBox:SetText("")
+    RefreshBankers()
+end)
+
+addItemBox:SetScript("OnReceiveDrag", function(self)
+    local dragType, _, _, itemID = GetCursorInfo()
+    if dragType == "item" then
+        self:SetText(itemID)
+        ClearCursor()
+    end
+end)
+
+addItemBtn:SetScript("OnClick", function()
+    if not selectedBanker then return end
+    local raw = strtrim(addItemBox:GetText())
+    local itemID = tonumber(raw) or tonumber(raw:match("item:(%d+)"))
+    if itemID then
+        AddItem(selectedBanker, itemID)
+        addItemBox:SetText("")
+        RefreshItems()
+    end
+end)
