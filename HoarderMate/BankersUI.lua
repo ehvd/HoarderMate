@@ -176,7 +176,7 @@ addBankerBtn:SetScript("OnClick", function()
 end)
 
 addItemBox:SetScript("OnReceiveDrag", function(self)
-    local dragType, _, _, itemID = GetCursorInfo()
+    local dragType, itemID = GetCursorInfo()
     if dragType == "item" then
         self:SetText(itemID)
         ClearCursor()
