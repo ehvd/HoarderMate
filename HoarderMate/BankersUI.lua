@@ -10,10 +10,43 @@ local addBankerBox  = HoarderMateConfigAddBankerBox
 local addBankerBtn  = HoarderMateConfigAddBankerBtn
 local addItemBox    = HoarderMateConfigAddItemBox
 local addItemBtn    = HoarderMateConfigAddItemBtn
+local itemPreview   = HoarderMateConfigItemPreview
 
 -- Placeholder texts (SearchBoxTemplate.Instructions can only be set via Lua)
 addBankerBox.Instructions:SetText("Name-Realm")
 addItemBox.Instructions:SetText("Item ID or link")
+
+-- Icon texture for the item preview (created via Lua; XML Frame child can't have bare Textures)
+local itemPreviewIcon = HoarderMateConfigItemPreviewIcon:CreateTexture(nil, "ARTWORK")
+itemPreviewIcon:SetAllPoints()
+local itemPreviewName = HoarderMateConfigItemPreviewName
+
+local PREVIEW_EMPTY_ICON = "Interface\\Icons\\INV_Misc_QuestionMark"
+
+local function UpdateItemPreview(raw)
+    raw = strtrim(raw or "")
+    local itemID = tonumber(raw) or tonumber(raw:match("item:(%d+)"))
+    if not itemID and raw ~= "" then
+        local name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, id = GetItemInfo(raw)
+        if name then itemID = id end
+    end
+
+    if itemID then
+        local name    = C_Item.GetItemNameByID(itemID)
+        local icon    = C_Item.GetItemIconByID(itemID)
+        local quality = select(3, GetItemInfo(itemID))
+        local color   = ITEM_QUALITY_COLORS[quality or 1] or ITEM_QUALITY_COLORS[1]
+        if name and icon then
+            itemPreviewIcon:SetTexture(icon)
+            itemPreviewName:SetText(name)
+            itemPreviewName:SetTextColor(color.r, color.g, color.b)
+            return
+        end
+    end
+
+    itemPreviewIcon:SetTexture(PREVIEW_EMPTY_ICON)
+    itemPreviewName:SetText("|cff808080No item selected|r")
+end
 
 -------------------------------------------------------------------------------
 -- DB helpers
@@ -164,6 +197,7 @@ end
 win:HookScript("OnShow", function()
     selectedBanker = nil
     noSelection:Show()
+    UpdateItemPreview("")
     RefreshBankers()
     RefreshItems()
 end)
@@ -189,6 +223,25 @@ local function TryAddItemByText(raw)
         RefreshItems()
     end
 end
+
+HoarderMateConfigItemPreviewIcon:SetScript("OnReceiveDrag", function()
+    local dragType, itemID = GetCursorInfo()
+    if dragType == "item" then
+        addItemBox:SetText(tostring(itemID))
+        ClearCursor()
+    end
+end)
+HoarderMateConfigItemPreviewIcon:SetScript("OnMouseDown", function()
+    local dragType, itemID = GetCursorInfo()
+    if dragType == "item" then
+        addItemBox:SetText(tostring(itemID))
+        ClearCursor()
+    end
+end)
+
+addItemBox:HookScript("OnTextChanged", function(self)
+    UpdateItemPreview(self:GetText())
+end)
 
 addItemBox:SetScript("OnReceiveDrag", function(self)
     local dragType, itemID = GetCursorInfo()

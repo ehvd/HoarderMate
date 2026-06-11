@@ -48,7 +48,7 @@
             <ScrollFrame name="HoarderMateConfigItemScroll" inherits="UIPanelScrollFrameTemplate">
                 <Anchors>
                     <Anchor point="TOPLEFT"     relativeTo="HoarderMateConfigWindow" relativePoint="TOPLEFT"     x="181" y="-30"/>
-                    <Anchor point="BOTTOMRIGHT" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMRIGHT" x="-32" y="43"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMRIGHT" x="-32" y="67"/>
                 </Anchors>
                 <ScrollChild>
                     <Frame name="HoarderMateConfigItemContent">
@@ -76,6 +76,57 @@
                     <AbsDimension x="22" y="22"/>
                 </Size>
             </Button>
+
+            <!-- Item preview (shown above the add-item box when a valid item is entered) -->
+            <Frame name="HoarderMateConfigItemPreview">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT"  relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMLEFT"  x="181" y="39"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMRIGHT" x="-31" y="39"/>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="0" y="24"/>
+                </Size>
+                <Frames>
+                    <Frame name="$parentIcon" enableMouse="true">
+                        <Size><AbsDimension x="22" y="22"/></Size>
+                        <Anchors>
+                            <Anchor point="LEFT" x="0" y="0"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture>
+                            <Anchors><Anchor point="TOPLEFT"/><Anchor point="BOTTOMRIGHT"/></Anchors>
+                            <Color r="0.08" g="0.08" b="0.08" a="0.9"/>
+                        </Texture>
+                        <Texture>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                                <Anchor point="TOPRIGHT"/>
+                            </Anchors>
+                            <Size><AbsDimension x="0" y="1"/></Size>
+                            <Color r="0.4" g="0.4" b="0.4" a="0.8"/>
+                        </Texture>
+                        <Texture>
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT"/>
+                                <Anchor point="BOTTOMRIGHT"/>
+                            </Anchors>
+                            <Size><AbsDimension x="0" y="1"/></Size>
+                            <Color r="0.4" g="0.4" b="0.4" a="0.8"/>
+                        </Texture>
+                    </Layer>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentName" inherits="GameFontHighlightSmall" justifyH="LEFT">
+                            <Anchors>
+                                <Anchor point="LEFT"  relativeTo="$parentIcon" relativePoint="RIGHT" x="4" y="0"/>
+                                <Anchor point="RIGHT" x="0" y="0"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
 
             <!-- Add Item input + button -->
             <EditBox name="HoarderMateConfigAddItemBox" inherits="SearchBoxTemplate" autoFocus="false">
