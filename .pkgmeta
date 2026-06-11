@@ -1,0 +1,12 @@
+package-as: HoarderMate
+enable-nolib-creation: no
+curse-id: 1572251
+
+ignore:
+  - .github
+  - .idea
+  - .luacheckrc
+  - .pkgmeta
+  - Makefile
+  - CHANGELOG.md
+  - HoarderMate

@@ -1,0 +1,176 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\FrameXML\UI.xsd">
+
+    <!--
+        Layout constants (px):
+            LEFT_W = 160  |  DIVIDER_X = 168  |  RIGHT_X = 176
+            PAD    =   8  |  BOTTOM_BAR = 38
+    -->
+    <Frame name="HoarderMateConfigWindow" parent="UIParent"
+           inherits="BasicFrameTemplateWithInset"
+           movable="true" enableMouse="true" hidden="true" frameStrata="MEDIUM" toplevel="true">
+        <Size>
+            <AbsDimension x="500" y="380"/>
+        </Size>
+        <Anchors>
+            <Anchor point="CENTER"/>
+        </Anchors>
+        <Scripts>
+            <OnLoad>
+                self:RegisterForDrag("LeftButton")
+                self.TitleText:SetText("HoarderMate - Banker Configuration")
+            </OnLoad>
+            <OnDragStart>self:StartMoving()</OnDragStart>
+            <OnDragStop>self:StopMovingOrSizing()</OnDragStop>
+        </Scripts>
+
+        <Frames>
+            <!-- Left: banker list (inset: top -30 = -8 content - 22 titlebar, bottom 43 = 38 bar + 5 border) -->
+            <ScrollFrame name="HoarderMateConfigBankerScroll" inherits="UIPanelScrollFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT"    relativeTo="HoarderMateConfigWindow" relativePoint="TOPLEFT"    x="13"  y="-30"/>
+                    <Anchor point="BOTTOMLEFT" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMLEFT" x="13"  y="43"/>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="140" y="0"/>
+                </Size>
+                <ScrollChild>
+                    <Frame name="HoarderMateConfigBankerContent">
+                        <Size>
+                            <AbsDimension x="120" y="1"/>
+                        </Size>
+                    </Frame>
+                </ScrollChild>
+            </ScrollFrame>
+
+            <!-- Right: item list -->
+            <ScrollFrame name="HoarderMateConfigItemScroll" inherits="UIPanelScrollFrameTemplate">
+                <Anchors>
+                    <Anchor point="TOPLEFT"     relativeTo="HoarderMateConfigWindow" relativePoint="TOPLEFT"     x="181" y="-30"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMRIGHT" x="-32" y="67"/>
+                </Anchors>
+                <ScrollChild>
+                    <Frame name="HoarderMateConfigItemContent">
+                        <Size>
+                            <AbsDimension x="280" y="1"/>
+                        </Size>
+                    </Frame>
+                </ScrollChild>
+            </ScrollFrame>
+
+            <!-- Add Banker input + button -->
+            <EditBox name="HoarderMateConfigAddBankerBox" inherits="SearchBoxTemplate" autoFocus="false">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMLEFT" x="13" y="13"/>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="120" y="22"/>
+                </Size>
+            </EditBox>
+            <Button name="HoarderMateConfigAddBankerBtn" inherits="UIPanelButtonTemplate" text="+">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="HoarderMateConfigAddBankerBox" relativePoint="RIGHT" x="2"/>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="22" y="22"/>
+                </Size>
+            </Button>
+
+            <!-- Item preview (shown above the add-item box when a valid item is entered) -->
+            <Frame name="HoarderMateConfigItemPreview">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT"  relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMLEFT"  x="181" y="39"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMRIGHT" x="-31" y="39"/>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="0" y="24"/>
+                </Size>
+                <Frames>
+                    <Frame name="$parentIcon" enableMouse="true">
+                        <Size><AbsDimension x="22" y="22"/></Size>
+                        <Anchors>
+                            <Anchor point="LEFT" x="0" y="0"/>
+                        </Anchors>
+                    </Frame>
+                </Frames>
+                <Layers>
+                    <Layer level="BACKGROUND">
+                        <Texture>
+                            <Anchors><Anchor point="TOPLEFT"/><Anchor point="BOTTOMRIGHT"/></Anchors>
+                            <Color r="0.08" g="0.08" b="0.08" a="0.9"/>
+                        </Texture>
+                        <Texture>
+                            <Anchors>
+                                <Anchor point="TOPLEFT"/>
+                                <Anchor point="TOPRIGHT"/>
+                            </Anchors>
+                            <Size><AbsDimension x="0" y="1"/></Size>
+                            <Color r="0.4" g="0.4" b="0.4" a="0.8"/>
+                        </Texture>
+                        <Texture>
+                            <Anchors>
+                                <Anchor point="BOTTOMLEFT"/>
+                                <Anchor point="BOTTOMRIGHT"/>
+                            </Anchors>
+                            <Size><AbsDimension x="0" y="1"/></Size>
+                            <Color r="0.4" g="0.4" b="0.4" a="0.8"/>
+                        </Texture>
+                    </Layer>
+                    <Layer level="ARTWORK">
+                        <FontString name="$parentName" inherits="GameFontHighlightSmall" justifyH="LEFT">
+                            <Anchors>
+                                <Anchor point="LEFT"  relativeTo="$parentIcon" relativePoint="RIGHT" x="4" y="0"/>
+                                <Anchor point="RIGHT" x="0" y="0"/>
+                            </Anchors>
+                        </FontString>
+                    </Layer>
+                </Layers>
+            </Frame>
+
+            <!-- Add Item input + button -->
+            <EditBox name="HoarderMateConfigAddItemBox" inherits="SearchBoxTemplate" autoFocus="false">
+                <Anchors>
+                    <Anchor point="BOTTOMLEFT"  relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMLEFT"  x="181" y="13"/>
+                    <Anchor point="BOTTOMRIGHT" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMRIGHT" x="-31" y="13"/>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="0" y="22"/>
+                </Size>
+            </EditBox>
+            <Button name="HoarderMateConfigAddItemBtn" inherits="UIPanelButtonTemplate" text="+">
+                <Anchors>
+                    <Anchor point="LEFT" relativeTo="HoarderMateConfigAddItemBox" relativePoint="RIGHT" x="2"/>
+                </Anchors>
+                <Size>
+                    <AbsDimension x="22" y="22"/>
+                </Size>
+            </Button>
+        </Frames>
+
+        <Layers>
+            <Layer level="BACKGROUND">
+                <!-- Vertical divider between the two columns -->
+                <Texture name="HoarderMateConfigDivider">
+                    <Anchors>
+                        <Anchor point="TOP"    relativeTo="HoarderMateConfigWindow" relativePoint="TOPLEFT"    x="173" y="-30"/>
+                        <Anchor point="BOTTOM" relativeTo="HoarderMateConfigWindow" relativePoint="BOTTOMLEFT" x="173" y="43"/>
+                    </Anchors>
+                    <Size>
+                        <AbsDimension x="1" y="0"/>
+                    </Size>
+                    <Color r="0.3" g="0.3" b="0.3" a="0.8"/>
+                </Texture>
+            </Layer>
+            <Layer level="ARTWORK">
+                <FontString name="HoarderMateConfigNoSelection" inherits="GameFontDisable"
+                            justifyH="CENTER" text="Select a banker&#10;to see their items.">
+                    <Anchors>
+                        <Anchor point="CENTER" relativeTo="HoarderMateConfigItemScroll" relativePoint="CENTER"/>
+                    </Anchors>
+                </FontString>
+            </Layer>
+        </Layers>
+    </Frame>
+
+</Ui>

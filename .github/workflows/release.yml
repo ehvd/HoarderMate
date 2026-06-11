@@ -1,0 +1,58 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Semantic version (e.g. 1.2.3)"
+        required: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Validate version format
+        run: |
+          if ! echo "${{ inputs.version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Invalid version '${{ inputs.version }}'. Must be semver (e.g. 1.2.3)"
+            exit 1
+          fi
+
+      - name: Bump version in TOC
+        run: |
+          sed -i "s/^## Version:.*$/## Version: ${{ inputs.version }}/" HoarderMate/HoarderMate.toc
+
+      - name: Update CHANGELOG
+        run: |
+          DATE=$(date +%Y-%m-%d)
+          sed -i "s/^## \[Unreleased\]$/## [Unreleased]\n\n## [${{ inputs.version }}] - ${DATE}/" CHANGELOG.md
+
+      - name: Commit and tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add HoarderMate/HoarderMate.toc CHANGELOG.md
+          git commit -m "chore: release v${{ inputs.version }}"
+          git tag "v${{ inputs.version }}"
+          git push
+          git push --tags
+
+      # The packager requires the addon TOC at the same level as the .git
+      # checkout. Our source lives in HoarderMate/, so stage a copy of it at
+      # the workspace root for packaging only (the repo layout is untouched).
+      - name: Stage addon source at workspace root
+        run: |
+          cp HoarderMate/*.toc HoarderMate/*.lua HoarderMate/*.xml .
+
+      - name: Package and upload to CurseForge
+        uses: BigWigsMods/packager@v2
+        env:
+          CF_API_KEY: ${{ secrets.CF_API_KEY }}
