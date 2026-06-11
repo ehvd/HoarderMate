@@ -3,14 +3,12 @@ local ROW_H = 22
 -- Local aliases for XML-defined frames
 local win           = HoarderMateConfigWindow
 local bankerContent = HoarderMateConfigBankerContent
-local itemScroll    = HoarderMateConfigItemScroll
 local itemContent   = HoarderMateConfigItemContent
 local noSelection   = HoarderMateConfigNoSelection
 local addBankerBox  = HoarderMateConfigAddBankerBox
 local addBankerBtn  = HoarderMateConfigAddBankerBtn
 local addItemBox    = HoarderMateConfigAddItemBox
 local addItemBtn    = HoarderMateConfigAddItemBtn
-local itemPreview   = HoarderMateConfigItemPreview
 
 -- Placeholder texts (SearchBoxTemplate.Instructions can only be set via Lua)
 addBankerBox.Instructions:SetText("Name-Realm")
@@ -61,17 +59,8 @@ local function AddBanker(name)
     DB()[name] = DB()[name] or { items = {} }
 end
 
-local function RemoveBanker(name)
-    DB()[name] = nil
-end
-
 local function AddItem(banker, itemID)
     if DB()[banker] then DB()[banker].items[itemID] = true end
-end
-
-function HoarderMate.AddItemToBanker(banker, itemID)
-    AddItem(banker, itemID)
-    if selectedBanker == banker then RefreshItems() end
 end
 
 local function RemoveItem(banker, itemID)
@@ -150,6 +139,11 @@ local function RefreshItems()
         itemRows[idx] = row
     end
     itemContent:SetHeight(math.max(idx * ROW_H, 1))
+end
+
+function HoarderMate.AddItemToBanker(banker, itemID)
+    AddItem(banker, itemID)
+    if selectedBanker == banker then RefreshItems() end
 end
 
 local function RefreshBankers()

@@ -10,7 +10,8 @@ globals = {
     "HoarderMate",
     "HoarderMateDB",
     "HandleModifiedItemClick",
-    "OnMailSent",
+    -- Native frame we attach fields to
+    "MailFrameTab3",
 }
 
 -- WoW API and frame globals (read-only from luacheck's perspective)
@@ -41,7 +42,6 @@ read_globals = {
     "MailFrameInset",
     "MailFrameCloseButton",
     "MailFrameTab2",
-    "MailFrameTab3",
     "SendMailFrame",
     "SendMailNameEditBox",
     "SendMailMailButton",
