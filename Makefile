@@ -15,7 +15,7 @@ endif
 
 DEST := $(WOW_ADDONS)/$(ADDON)
 
-.PHONY: install clean
+.PHONY: install clean version
 
 install:
 	rm -rf "$(DEST)"
@@ -25,3 +25,10 @@ install:
 clean:
 	rm -rf "$(DEST)"
 	@echo "Removed $(ADDON) from $(DEST)"
+
+# Bump version locally: make version v=1.2.3
+version:
+	@if [ -z "$(v)" ]; then echo "Usage: make version v=1.2.3"; exit 1; fi
+	@echo "$(v)" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$$' || (echo "Invalid semver: $(v)"; exit 1)
+	perl -pi -e 's/^## Version:.*$$/## Version: $(v)/' $(ADDON)/$(ADDON).toc
+	@echo "Version bumped to $(v) in $(ADDON)/$(ADDON).toc"

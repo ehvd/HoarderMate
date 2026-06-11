@@ -1,0 +1,10 @@
+package-as: HoarderMate
+enable-nolib-creation: no
+
+ignore:
+  - .github
+  - .idea
+  - .luacheckrc
+  - .pkgmeta
+  - Makefile
+  - CHANGELOG.md
