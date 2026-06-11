@@ -175,6 +175,21 @@ addBankerBtn:SetScript("OnClick", function()
     RefreshBankers()
 end)
 
+local function TryAddItemByText(raw)
+    if not selectedBanker or raw == "" then return end
+    local itemID = tonumber(raw) or tonumber(raw:match("item:(%d+)"))
+    if not itemID then
+        -- Try resolving by name — works if the item is in the client cache
+        local name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, id = GetItemInfo(raw)
+        if name then itemID = id end
+    end
+    if itemID then
+        AddItem(selectedBanker, itemID)
+        addItemBox:SetText("")
+        RefreshItems()
+    end
+end
+
 addItemBox:SetScript("OnReceiveDrag", function(self)
     local dragType, itemID = GetCursorInfo()
     if dragType == "item" then
@@ -183,13 +198,23 @@ addItemBox:SetScript("OnReceiveDrag", function(self)
     end
 end)
 
-addItemBtn:SetScript("OnClick", function()
-    if not selectedBanker then return end
-    local raw = strtrim(addItemBox:GetText())
-    local itemID = tonumber(raw) or tonumber(raw:match("item:(%d+)"))
-    if itemID then
-        AddItem(selectedBanker, itemID)
-        addItemBox:SetText("")
-        RefreshItems()
-    end
+addItemBox:SetScript("OnEnterPressed", function(self)
+    TryAddItemByText(strtrim(self:GetText()))
 end)
+
+addItemBtn:SetScript("OnClick", function()
+    TryAddItemByText(strtrim(addItemBox:GetText()))
+end)
+
+-- Intercept ctrl-clicks on bag items while the add-item box is focused
+local origHandleModifiedItemClick = HandleModifiedItemClick
+function HandleModifiedItemClick(link)
+    if addItemBox:HasFocus() and IsControlKeyDown() and link then
+        local itemID = tonumber(link:match("item:(%d+)"))
+        if itemID then
+            addItemBox:SetText(tostring(itemID))
+            return
+        end
+    end
+    return origHandleModifiedItemClick(link)
+end
