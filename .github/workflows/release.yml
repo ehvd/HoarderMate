@@ -45,9 +45,14 @@ jobs:
           git push
           git push --tags
 
+      # The packager requires the addon TOC at the same level as the .git
+      # checkout. Our source lives in HoarderMate/, so stage a copy of it at
+      # the workspace root for packaging only (the repo layout is untouched).
+      - name: Stage addon source at workspace root
+        run: |
+          cp HoarderMate/*.toc HoarderMate/*.lua HoarderMate/*.xml .
+
       - name: Package and upload to CurseForge
         uses: BigWigsMods/packager@v2
         env:
           CF_API_KEY: ${{ secrets.CF_API_KEY }}
-        with:
-          curse-id: ${{ secrets.CURSEFORGE_PROJECT_ID }}
