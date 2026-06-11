@@ -10,4 +10,6 @@ Mailbox.xml
 Mailbox.lua
 BankersUI.xml
 BankersUI.lua
+NewItemsPopup.xml
+NewItemsPopup.lua
 

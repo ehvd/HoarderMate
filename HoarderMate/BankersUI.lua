@@ -69,6 +69,11 @@ local function AddItem(banker, itemID)
     if DB()[banker] then DB()[banker].items[itemID] = true end
 end
 
+function HoarderMate.AddItemToBanker(banker, itemID)
+    AddItem(banker, itemID)
+    if selectedBanker == banker then RefreshItems() end
+end
+
 local function RemoveItem(banker, itemID)
     if DB()[banker] then DB()[banker].items[itemID] = nil end
 end

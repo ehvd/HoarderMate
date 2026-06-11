@@ -218,9 +218,66 @@ InboxFrame:HookScript("OnShow", function()
 end)
 
 -------------------------------------------------------------------------------
+-- Unconfigured items detection
+-------------------------------------------------------------------------------
+local pendingSend     = nil
+local sendButtonHooked = false
+
+local function FindBanker(recipient)
+    local bankers = HoarderMateDB and HoarderMateDB.bankers
+    if not bankers then return nil, nil end
+    if bankers[recipient] then return recipient, bankers[recipient] end
+    local recipientName = (recipient:match("^([^%-]+)") or recipient):lower()
+    for name, data in pairs(bankers) do
+        if (name:match("^([^%-]+)") or name):lower() == recipientName then
+            return name, data
+        end
+    end
+    return nil, nil
+end
+
+local function CapturePendingSend()
+    pendingSend = nil
+
+    local recipient = strtrim(SendMailNameEditBox:GetText())
+    if recipient == "" then return end
+
+    local bankerName, bankerData = FindBanker(recipient)
+    if not bankerData then return end
+
+    local unconfigured = {}
+    for slot = 1, ATTACHMENTS_MAX_SEND do
+        local _, itemID = GetSendMailItem(slot)
+        if itemID and not bankerData.items[itemID] then
+            unconfigured[#unconfigured + 1] = itemID
+        end
+    end
+
+    if #unconfigured > 0 then
+        pendingSend = { bankerName = bankerName, items = unconfigured }
+    end
+end
+
+local function OnMailSent()
+    if pendingSend then
+        HoarderMate.ShowNewItemsPopup(pendingSend.bankerName, pendingSend.items)
+        pendingSend = nil
+    end
+end
+
+local function HookSendButton()
+    if sendButtonHooked then return end
+    if SendMailMailButton then
+        SendMailMailButton:HookScript("OnClick", CapturePendingSend)
+        sendButtonHooked = true
+    end
+end
+
+-------------------------------------------------------------------------------
 -- Mailbox events
 -------------------------------------------------------------------------------
 local function OnMailboxOpen()
+    HookSendButton()
     MailFrameTab3:Show()
     SetTabActive(false)
 end
@@ -236,6 +293,7 @@ local mailEvents = CreateFrame("Frame")
 mailEvents:RegisterEvent("MAIL_SHOW")
 mailEvents:RegisterEvent("MAIL_CLOSED")
 mailEvents:RegisterEvent("BAG_UPDATE_DELAYED")
+mailEvents:RegisterEvent("MAIL_SEND_SUCCESS")
 mailEvents:SetScript("OnEvent", function(self, event)
     if event == "MAIL_SHOW" then
         OnMailboxOpen()
@@ -243,5 +301,7 @@ mailEvents:SetScript("OnEvent", function(self, event)
         OnMailboxClose()
     elseif event == "BAG_UPDATE_DELAYED" and hmPanelOpen then
         RefreshSendList()
+    elseif event == "MAIL_SEND_SUCCESS" then
+        OnMailSent()
     end
 end)
