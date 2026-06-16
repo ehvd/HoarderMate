@@ -6,6 +6,11 @@
 ## SavedVariables: HoarderMateDB
 
 Embeds.xml
+Locales\HoarderMate-enUS.lua
+Locales\HoarderMate-deDE.lua
+Locales\HoarderMate-frFR.lua
+Locales\HoarderMate-esES.lua
+Locales\HoarderMate-itIT.lua
 HoarderMate.lua
 Mailbox.xml
 Mailbox.lua

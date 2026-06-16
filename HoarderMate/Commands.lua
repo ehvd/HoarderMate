@@ -9,6 +9,8 @@
 
 LibStub("AceConsole-3.0"):Embed(HoarderMate)
 
+local L = HoarderMate.L
+
 -- Slash aliases that open the command parser (e.g. /hm, /hoardermate).
 -- Add or edit entries here -- no leading slash.
 local SLASH_ALIASES = { "hm", "hoardermate" }
@@ -47,9 +49,9 @@ local function FormatAliases()
 end
 
 local function PrintHelp()
-    print("|cffffd100HoarderMate|r usage:")
-    print(FormatAliases() .. " |cff00ff00<command>|r |cff00ffff<args>|r")
-    print("|cffffd100Available commands:|r")
+    print("|cffffd100HoarderMate|r " .. L["CmdUsage"])
+    print(FormatAliases() .. " |cff00ff00" .. L["CmdPlaceholderCommand"] .. "|r |cff00ffff" .. L["CmdPlaceholderArgs"] .. "|r")
+    print("|cffffd100" .. L["CmdAvailable"] .. "|r")
     local prefix = "/" .. SLASH_ALIASES[1]
     for _, name in ipairs(commandOrder) do
         print(("  |cffffd100%s|r |cff00ff00%s|r - %s"):format(prefix, name, commands[name].help or ""))
@@ -72,11 +74,11 @@ end
 -------------------------------------------------------------------------------
 RegisterCommand("config", function(args)
     HoarderMate.ToggleConfigWindow()
-end, "open the banker configuration")
+end, L["CmdConfigHelp"])
 
 RegisterCommand({ "help", "?" }, function(args)
     PrintHelp()
-end, "show this help")
+end, L["CmdHelpHelp"])
 
 -------------------------------------------------------------------------------
 for _, alias in ipairs(SLASH_ALIASES) do

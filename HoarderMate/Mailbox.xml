@@ -62,7 +62,7 @@
         <Scripts>
             <OnEnter>
                 GameTooltip:SetOwner(self, "ANCHOR_LEFT")
-                GameTooltip:SetText("Settings")
+                GameTooltip:SetText(HoarderMate.L["SettingsTooltip"])
                 GameTooltip:Show()
             </OnEnter>
             <OnLeave>

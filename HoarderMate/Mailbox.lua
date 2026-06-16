@@ -1,5 +1,7 @@
 HoarderMate.mailPanel = HoarderMatePanel
 
+local L = HoarderMate.L
+
 -- MailFrameTab3 properties that cannot be set in XML
 MailFrameTab3.index = 3
 PanelTemplates_SetNumTabs(MailFrame, 3)
@@ -94,7 +96,7 @@ local function BuildSendRows(sendable)
         local sendBtn = CreateFrame("Button", nil, header, "UIPanelButtonTemplate")
         sendBtn:SetSize(50, SEND_ROW_H - 2)
         sendBtn:SetPoint("RIGHT", -2, 0)
-        sendBtn:SetText("Send")
+        sendBtn:SetText(L["SendButton"])
         sendBtn:SetScript("OnClick", function()
             StageMailForBanker(bankerName, items)
         end)
@@ -153,7 +155,7 @@ local function RefreshSendList()
 
     if not hasBankers then
         HoarderMatePanelLabel:Show()
-        HoarderMatePanelSublabel:SetText("Click the cogwheel to configure\nbankers and items.")
+        HoarderMatePanelSublabel:SetText(L["ConfigHint"])
         HoarderMatePanelSublabel:Show()
         HoarderMatePanelSendScroll:Hide()
         return
@@ -163,7 +165,7 @@ local function RefreshSendList()
 
     if not next(sendable) then
         HoarderMatePanelLabel:Hide()
-        HoarderMatePanelSublabel:SetText("Nothing to send to any banker.")
+        HoarderMatePanelSublabel:SetText(L["NothingToSend"])
         HoarderMatePanelSublabel:Show()
         HoarderMatePanelSendScroll:Hide()
     else

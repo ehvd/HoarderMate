@@ -1,6 +1,12 @@
 local ROW_H = 22
 local popupRows = {}
 
+local L = HoarderMate.L
+
+-- XML defines the button labels in English; localize them here.
+HoarderMateNewItemsPopupAddBtn:SetText(L["AddAllButton"])
+HoarderMateNewItemsPopupDismissBtn:SetText(L["DismissButton"])
+
 local function ClearPopupRows()
     for _, r in ipairs(popupRows) do r:Hide() end
     popupRows = {}
@@ -11,7 +17,7 @@ function HoarderMate.ShowNewItemsPopup(bankerName, items)
     local content = HoarderMateNewItemsPopupContent
 
     HoarderMateNewItemsPopupMessage:SetText(
-        "Items sent to |cffffd100" .. bankerName .. "|r not in their config:")
+        L["NewItemsMessage"]:format("|cffffd100" .. bankerName .. "|r"))
 
     -- (Re)builds the item rows from the current list. Each row has a remove "X"
     -- (styled like the RaidSummon name-list remove button) that drops the item so
@@ -50,7 +56,7 @@ function HoarderMate.ShowNewItemsPopup(bankerName, items)
             end)
             removeBtn:SetScript("OnEnter", function(self)
                 GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-                GameTooltip:SetText("Remove")
+                GameTooltip:SetText(L["RemoveTooltip"])
                 GameTooltip:Show()
             end)
             removeBtn:SetScript("OnLeave", GameTooltip_Hide)
@@ -59,7 +65,7 @@ function HoarderMate.ShowNewItemsPopup(bankerName, items)
             label:SetPoint("LEFT", icon, "RIGHT", 4, 0)
             label:SetPoint("RIGHT", removeBtn, "LEFT", -4, 0)
             label:SetJustifyH("LEFT")
-            label:SetText(C_Item.GetItemNameByID(itemID) or "Item #" .. itemID)
+            label:SetText(C_Item.GetItemNameByID(itemID) or L["ItemFallback"]:format(itemID))
             label:SetTextColor(color.r, color.g, color.b)
 
             row:EnableMouse(true)
