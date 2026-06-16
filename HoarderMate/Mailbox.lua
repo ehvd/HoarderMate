@@ -65,7 +65,8 @@ local function StageMailForBanker(bankerName, items)
                     C_Container.PickupContainerItem(bag, slot)
                     ClickSendMailItemButton(attachSlot)
                     attachSlot = attachSlot + 1
-                    break
+                    -- no break: keep scanning so every stack of this item attaches,
+                    -- not just the first one in the bag
                 end
             end
         end
