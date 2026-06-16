@@ -5,6 +5,7 @@
 ## Version: 0.0.1
 ## SavedVariables: HoarderMateDB
 
+Embeds.xml
 HoarderMate.lua
 Mailbox.xml
 Mailbox.lua
@@ -12,4 +13,5 @@ BankersUI.xml
 BankersUI.lua
 NewItemsPopup.xml
 NewItemsPopup.lua
+Commands.lua
 
