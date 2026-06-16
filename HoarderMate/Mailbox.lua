@@ -46,9 +46,7 @@ local function StageMailForBanker(bankerName, items)
     hmPanelOpen = false
     HoarderMatePanel:Hide()
     HoarderMateConfigButton:Hide()
-    PanelTemplates_SetTab(MailFrame, 1)
-    SendMailFrame:Show()
-    InboxFrame:Hide()
+    MailFrameTab_OnClick(nil, 2)
 
     -- Pre-fill recipient
     SendMailNameEditBox:SetText(bankerName)
