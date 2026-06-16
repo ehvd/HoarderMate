@@ -4,6 +4,8 @@ All notable changes to HoarderMate will be documented here.
 
 ## [Unreleased]
 
+## [0.0.2] - 2026-06-16
+
 ### Added
 - Slash commands `/hm`  and `/hoardermate`: `config` opens the banker 
   configuration and `help` shows usage. Built on an extensible
