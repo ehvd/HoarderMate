@@ -19,7 +19,7 @@
         <Scripts>
             <OnLoad>
                 self:RegisterForDrag("LeftButton")
-                self.TitleText:SetText("HoarderMate - Banker Configuration")
+                self.TitleText:SetText("HoarderMate - " .. HoarderMate.L["BankerConfigTitle"])
             </OnLoad>
             <OnDragStart>self:StartMoving()</OnDragStart>
             <OnDragStop>self:StopMovingOrSizing()</OnDragStop>

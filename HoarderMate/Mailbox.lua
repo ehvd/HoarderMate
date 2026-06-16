@@ -1,5 +1,7 @@
 HoarderMate.mailPanel = HoarderMatePanel
 
+local L = HoarderMate.L
+
 -- MailFrameTab3 properties that cannot be set in XML
 MailFrameTab3.index = 3
 PanelTemplates_SetNumTabs(MailFrame, 3)
@@ -46,9 +48,7 @@ local function StageMailForBanker(bankerName, items)
     hmPanelOpen = false
     HoarderMatePanel:Hide()
     HoarderMateConfigButton:Hide()
-    PanelTemplates_SetTab(MailFrame, 1)
-    SendMailFrame:Show()
-    InboxFrame:Hide()
+    MailFrameTab_OnClick(nil, 2)
 
     -- Pre-fill recipient
     SendMailNameEditBox:SetText(bankerName)
@@ -67,7 +67,8 @@ local function StageMailForBanker(bankerName, items)
                     C_Container.PickupContainerItem(bag, slot)
                     ClickSendMailItemButton(attachSlot)
                     attachSlot = attachSlot + 1
-                    break
+                    -- no break: keep scanning so every stack of this item attaches,
+                    -- not just the first one in the bag
                 end
             end
         end
@@ -95,7 +96,7 @@ local function BuildSendRows(sendable)
         local sendBtn = CreateFrame("Button", nil, header, "UIPanelButtonTemplate")
         sendBtn:SetSize(50, SEND_ROW_H - 2)
         sendBtn:SetPoint("RIGHT", -2, 0)
-        sendBtn:SetText("Send")
+        sendBtn:SetText(L["SendButton"])
         sendBtn:SetScript("OnClick", function()
             StageMailForBanker(bankerName, items)
         end)
@@ -154,7 +155,7 @@ local function RefreshSendList()
 
     if not hasBankers then
         HoarderMatePanelLabel:Show()
-        HoarderMatePanelSublabel:SetText("Click the cogwheel to configure\nbankers and items.")
+        HoarderMatePanelSublabel:SetText(L["ConfigHint"])
         HoarderMatePanelSublabel:Show()
         HoarderMatePanelSendScroll:Hide()
         return
@@ -164,7 +165,7 @@ local function RefreshSendList()
 
     if not next(sendable) then
         HoarderMatePanelLabel:Hide()
-        HoarderMatePanelSublabel:SetText("Nothing to send to any banker.")
+        HoarderMatePanelSublabel:SetText(L["NothingToSend"])
         HoarderMatePanelSublabel:Show()
         HoarderMatePanelSendScroll:Hide()
     else
@@ -183,9 +184,21 @@ local function ShowNativeContent()
     HoarderMateConfigButton:Hide()
 end
 
+-- Match the Send Mail tab's chrome (inset position + button bar) so the HoarderMate
+-- panel always has the same background regardless of which mail tab was shown
+-- before. Mirrors RaidSummon's NormalizeChrome. The inset is restored by Blizzard's
+-- MailFrameTab_OnClick whenever a native tab is selected again.
+local function NormalizeChrome()
+    MailFrameInset:SetPoint("TOPLEFT", 4, -80)
+    if type(ButtonFrameTemplate_ShowButtonBar) == "function" then
+        ButtonFrameTemplate_ShowButtonBar(MailFrame)
+    end
+end
+
 local function ShowHMPanel()
     SendMailFrame:Hide()
     InboxFrame:Hide()
+    NormalizeChrome()
     HoarderMatePanel:Show()
     HoarderMateConfigButton:Show()
     RefreshSendList()

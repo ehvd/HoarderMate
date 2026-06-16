@@ -47,37 +47,27 @@
         </Anchors>
     </Button>
 
-    <!-- Cogwheel config button, sits left of the close button -->
-    <Button name="HoarderMateConfigButton" parent="MailFrame" inherits="GameMenuButtonTemplate" hidden="false">
+    <!-- Config button, sits left of the close button. Same style as RaidSummon's
+         settings button: a UIPanelButtonTemplate mini-button showing the options icon. -->
+    <Button name="HoarderMateConfigButton" parent="MailFrame" inherits="UIPanelButtonTemplate" text="|TInterface\Buttons\UI-OptionsButton:0|t" hidden="false">
         <Size>
-            <AbsDimension x="24" y="22"/>
+            <AbsDimension x="20" y="18"/>
         </Size>
         <Anchors>
-            <Anchor point="RIGHT" relativeTo="MailFrameCloseButton" relativePoint="LEFT">
-                <Offset x="4" y="2"/>
-            </Anchor>
+            <Anchor point="RIGHT" relativeTo="MailFrameCloseButton" relativePoint="LEFT"/>
         </Anchors>
-        <Layers>
-            <Layer level="OVERLAY">
-                <Texture name="$parentGear" file="Interface\Buttons\UI-OptionsButton">
-                    <Anchors>
-                        <Anchor point="CENTER" relativePoint="CENTER" x="0" y="0"/>
-                    </Anchors>
-                    <Size>
-                        <AbsDimension x="12" y="12"/>
-                    </Size>
-                </Texture>
-            </Layer>
-        </Layers>
+        <NormalFont style="GameFontNormalSmall"/>
+        <HighlightFont style="GameFontHighlightSmall"/>
+        <DisabledFont style="GameFontDisableSmall"/>
         <Scripts>
-            <OnMouseDown inherit="append">
-                HoarderMateConfigButtonGear:ClearAllPoints()
-                HoarderMateConfigButtonGear:SetPoint("CENTER", self, "CENTER", -2, -2)
-            </OnMouseDown>
-            <OnMouseUp inherit="append">
-                HoarderMateConfigButtonGear:ClearAllPoints()
-                HoarderMateConfigButtonGear:SetPoint("CENTER", self, "CENTER", 0, 0)
-            </OnMouseUp>
+            <OnEnter>
+                GameTooltip:SetOwner(self, "ANCHOR_LEFT")
+                GameTooltip:SetText(HoarderMate.L["SettingsTooltip"])
+                GameTooltip:Show()
+            </OnEnter>
+            <OnLeave>
+                GameTooltip:Hide()
+            </OnLeave>
         </Scripts>
     </Button>
 

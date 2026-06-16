@@ -1,20 +1,21 @@
 local ROW_H = 22
 
+local L = HoarderMate.L
+
 -- Local aliases for XML-defined frames
 local win           = HoarderMateConfigWindow
 local bankerContent = HoarderMateConfigBankerContent
-local itemScroll    = HoarderMateConfigItemScroll
 local itemContent   = HoarderMateConfigItemContent
 local noSelection   = HoarderMateConfigNoSelection
 local addBankerBox  = HoarderMateConfigAddBankerBox
 local addBankerBtn  = HoarderMateConfigAddBankerBtn
 local addItemBox    = HoarderMateConfigAddItemBox
 local addItemBtn    = HoarderMateConfigAddItemBtn
-local itemPreview   = HoarderMateConfigItemPreview
 
 -- Placeholder texts (SearchBoxTemplate.Instructions can only be set via Lua)
-addBankerBox.Instructions:SetText("Name-Realm")
-addItemBox.Instructions:SetText("Item ID or link")
+addBankerBox.Instructions:SetText(L["BankerPlaceholder"])
+addItemBox.Instructions:SetText(L["ItemPlaceholder"])
+HoarderMateConfigNoSelection:SetText(L["SelectBankerHint"])
 
 -- Icon texture for the item preview (created via Lua; XML Frame child can't have bare Textures)
 local itemPreviewIcon = HoarderMateConfigItemPreviewIcon:CreateTexture(nil, "ARTWORK")
@@ -45,7 +46,7 @@ local function UpdateItemPreview(raw)
     end
 
     itemPreviewIcon:SetTexture(PREVIEW_EMPTY_ICON)
-    itemPreviewName:SetText("|cff808080No item selected|r")
+    itemPreviewName:SetText("|cff808080" .. L["NoItemSelected"] .. "|r")
 end
 
 -------------------------------------------------------------------------------
@@ -61,17 +62,8 @@ local function AddBanker(name)
     DB()[name] = DB()[name] or { items = {} }
 end
 
-local function RemoveBanker(name)
-    DB()[name] = nil
-end
-
 local function AddItem(banker, itemID)
     if DB()[banker] then DB()[banker].items[itemID] = true end
-end
-
-function HoarderMate.AddItemToBanker(banker, itemID)
-    AddItem(banker, itemID)
-    if selectedBanker == banker then RefreshItems() end
 end
 
 local function RemoveItem(banker, itemID)
@@ -127,7 +119,7 @@ local function RefreshItems()
         label:SetPoint("LEFT", icon, "RIGHT", 4, 0)
         label:SetWidth(row:GetWidth() - ROW_H - 28)
         label:SetJustifyH("LEFT")
-        label:SetText(C_Item.GetItemNameByID(itemID) or "Item #" .. itemID)
+        label:SetText(C_Item.GetItemNameByID(itemID) or L["ItemFallback"]:format(itemID))
         label:SetTextColor(color.r, color.g, color.b)
 
         local remove = CreateFrame("Button", nil, row, "UIPanelCloseButton")
@@ -150,6 +142,11 @@ local function RefreshItems()
         itemRows[idx] = row
     end
     itemContent:SetHeight(math.max(idx * ROW_H, 1))
+end
+
+function HoarderMate.AddItemToBanker(banker, itemID)
+    AddItem(banker, itemID)
+    if selectedBanker == banker then RefreshItems() end
 end
 
 local function RefreshBankers()
