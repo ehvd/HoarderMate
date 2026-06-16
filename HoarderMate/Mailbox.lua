@@ -182,9 +182,21 @@ local function ShowNativeContent()
     HoarderMateConfigButton:Hide()
 end
 
+-- Match the Send Mail tab's chrome (inset position + button bar) so the HoarderMate
+-- panel always has the same background regardless of which mail tab was shown
+-- before. Mirrors RaidSummon's NormalizeChrome. The inset is restored by Blizzard's
+-- MailFrameTab_OnClick whenever a native tab is selected again.
+local function NormalizeChrome()
+    MailFrameInset:SetPoint("TOPLEFT", 4, -80)
+    if type(ButtonFrameTemplate_ShowButtonBar) == "function" then
+        ButtonFrameTemplate_ShowButtonBar(MailFrame)
+    end
+end
+
 local function ShowHMPanel()
     SendMailFrame:Hide()
     InboxFrame:Hide()
+    NormalizeChrome()
     HoarderMatePanel:Show()
     HoarderMateConfigButton:Show()
     RefreshSendList()
